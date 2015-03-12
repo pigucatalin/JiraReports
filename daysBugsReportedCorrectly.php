@@ -12,10 +12,11 @@ $ini_array = parse_ini_file("jira.properties");
 
 $username = $ini_array['user'];
 $pass = $ini_array['pass'];
+$baseURL=$ini_array['baseURL'];
 
 $yesterday = date('Y-m-d',strtotime("-1 days"));
 $jqlStr = urlencode('project = e-Replatform AND type = Bug and status not in (Closed,"Customer Testing", Resolved) AND createdDate >='.$yesterday);
-$uri = "https://newpig.atlassian.net/rest/api/2/search?jql=".$jqlStr."&maxResults=1000";
+$uri = "$baseURL/rest/api/2/search?jql=".$jqlStr."&maxResults=1000";
 $response = Request::get($uri)->authenticateWithBasic($username, $pass)->send();
 
 $issueCounter=0;
@@ -94,31 +95,3 @@ function checkEnvironment($issueResp){
 	}
 	return true;
 }
-
-
-
-
-
-
-/**
- *
- * $issueResp->body->key
- * $issueResp->body->fields
- * $issueResp->body->fields->priority->name 													?? e in alea 4 ?
- * $issueResp->body->fields->issuelinks[$i]->outwardIssue->fields->issuetype->name				?? e vreuna de type story
- * $issueResp->body->fields->customfield_10008     								?? is epicLink set ?
- * $issueResp->body->fields->customfield_11700->value     								?? severity value ?
- *
- * $issueResp->body->fields->environment     								?? contains the words to BUILD ..... ?
- *
- * https://newpig.atlassian.net/rest/api/2/issue/26511
- *
- * $response->body->issues[0]
- * $response->body->issues[0]->self
- * $response->body->issues[0]->key
- *
- * $response->body->issues[0]->key->fields->priority->name ?? e in alea 4 ?
- *
- * $response->body->issues[0]->key->fields->issuelinks[i]->outwardIssue->fields->issuetype->name ???= Story
- *		$response->body->issues[0]->key->fields->environment  ???? contains words ENV, BUILD ... ?
- */
