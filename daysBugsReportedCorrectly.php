@@ -65,7 +65,7 @@ function hasEpic($issueResp){
 	if(isset($issueResp->body->fields->customfield_10008)){
 		return true;
 	}
-	echo "NO EPIC SET!!!";
+	echo "NO EPIC SET!!!\n";
 	return false;
 }
 
