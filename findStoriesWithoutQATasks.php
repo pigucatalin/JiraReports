@@ -14,7 +14,38 @@ $username = $ini_array['user'];
 $pass = $ini_array['pass'];
 $baseURL=$ini_array['baseURL'];
 
-$jqlStr = urlencode('project = e-Replatform AND type = "Story" AND Sprint = 136');
+
+
+function getSprintId(){
+
+	global $username;
+	global $pass;
+	global $baseURL;
+
+	$sprintUrl = $baseURL."/rest/greenhopper/latest/sprintquery/44";
+
+	$sprints =  Request::get($sprintUrl)->authenticateWithBasic($username, $pass)->send()->body->sprints;
+
+	$currentSprintId = null;
+	foreach ($sprints as $sprint){
+		if($sprint->state == "ACTIVE" && strpos($sprint->name,'Sprint') !== false){
+			$currentSprintId = $sprint->id;
+		}
+	}
+	return $currentSprintId;
+}
+
+$currentSprintId = getSprintId();
+
+if(!$currentSprintId){
+	echo "Could not determine SprintID";
+	exit;
+}
+
+
+
+
+$jqlStr = urlencode('project = e-Replatform AND type = "Story" AND Sprint = '.$currentSprintId);
 //$jqlStr = urlencode('key = ER-3512');
 
 $uri = "$baseURL/rest/api/2/search?maxResults=1000&jql=".$jqlStr;
@@ -26,6 +57,8 @@ $response = Request::get($uri)->authenticateWithBasic($username, $pass)->send();
 
 $issueCounter=0;
 while($response->body->issues[$issueCounter]){
+
+	echo "-------------------------\n";
 	$issue = $response->body->issues[$issueCounter];
 	echo "Processing issue no $issueCounter - ".$issue->key."\n";
 
@@ -59,7 +92,7 @@ while($response->body->issues[$issueCounter]){
 		echo "NO QA TASKS!!!!!!!!\n";
 	}
 
-
+	echo "-------------------------\n";
 	$issueCounter++;
 }
 

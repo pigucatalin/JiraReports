@@ -1,7 +1,8 @@
 {
 
 "require": {
-    "nategood/httpful": "0.2.19"
+    "nategood/httpful": "0.2.19",
+    "phpmailer/phpmailer": "v5.2.9"
   }
 
 }
